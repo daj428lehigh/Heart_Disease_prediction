@@ -1,0 +1,81 @@
+﻿predictor Function Documentation
+Overview
+The predictor function is a machine-learning model that predicts heart disease risk
+Function 
+def predictor(the_input):
+    ...
+
+
+Parameters
+* the_input (pd.DataFrame):
+A pandas DataFrame representing the input data. The input should have the same structure as the training data used during model development.
+________________
+
+
+Process Description
+   1. Load and Filter Training Data:
+
+      * Reads a dataset (cleaned_merged_heart_dataset.csv).
+      * Filters the data based on the value of the FBS column in the input (0 for fasting, 1 for non-fasting), as in testing, not fasting significantly affected the outcome of the lab data.
+      2. columns and Target Extraction:
+
+         * Features extracted: ['thalachh', 'oldpeak', 'trestbps', 'chol', 'age', 'ca', 'sex'].
+         * Target variable: target.
+         3. Model Training:
+
+            * Splits data into training and testing sets (train_test_split with 80-20 split).
+            * Trains multiple models:
+            * Logistic Regression (log1): Predicts the main features.
+            * One-vs-One Logistic Regression (onevsone): Handles the categorical feature ca.
+            * Logistic Regression (log): Handles the binary feature sex.
+            4. Ensemble Model:
+
+               * Combines the individual models using a hard-voting ensemble (VotingClassifier).
+               * The ensemble includes:
+               * One-vs-One Classifier (onevsone)
+               * Logistic Regression on binary sex feature (log)
+               * Logistic Regression (log1).
+               5. Prediction:
+
+                  * Uses the ensemble model to predict the target for the given input data.
+________________
+
+
+Returns
+                  * ensemble1_predict (np.array):
+The final prediction(s) from the ensemble model based on the input data.
+________________
+
+
+Example Usage
+import pandas as pd
+
+
+# Prepare input data
+the_input = pd.read_csv('test_case.csv')  # Ensure the structure matches the training data.
+
+
+# Call the predictor
+prediction = predictor(the_input)
+print(prediction)
+
+
+________________
+
+
+Dependencies
+Ensure the following libraries are installed and imported:
+                     * pandas: For data manipulation.
+                     * sklearn.model_selection: For splitting the data into training and test sets.
+                     * sklearn.linear_model.LogisticRegression: For logistic regression modeling.
+                     * sklearn.multiclass.OneVsOneClassifier: For handling non-binary categorical features.
+                     * sklearn.ensemble.VotingClassifier: For ensemble modeling.
+Required Files
+                     * test_case.csv: Input data for predictions.
+                     * cleaned_merged_heart_dataset.csv: Preprocessed training data used for model development.
+________________
+
+
+Notes
+                     1. The function assumes that the training data (cleaned_merged_heart_dataset.csv) and input data (test_case.csv) are properly formatted and contain no missing values.
+                     2. For reproducibility, the random state in train_test_split is set to 53.
